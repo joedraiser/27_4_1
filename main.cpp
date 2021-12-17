@@ -16,6 +16,10 @@ public:
             name="";
     }
 
+    std::string getName()
+    {
+        return name;
+    }
 };
 
 class bigBranch
@@ -27,7 +31,7 @@ private:
 public:
     bigBranch(int bigBranchNum, int treeNum)
     {
-        for(int i;i<middleBranchesQty;i++)
+        for(int i=0;i<middleBranchesQty;i++)
         {
             middleBranches.push_back(new middleBranch(i,bigBranchNum,treeNum));
         }
@@ -35,6 +39,44 @@ public:
         std::cin >> name;
         if(name=="None")
             name="";
+    }
+
+    ~bigBranch()
+    {
+        for(int i=0;i<middleBranches.size();i++)
+            delete middleBranches[i];
+
+        //std::cout << "\nbigBranch deleted\n";
+    }
+
+    void listAllTenants(std::string neighbour="")
+    {
+        std::cout << "Here are neighbours of " << neighbour;
+        if(name!=""&&name!=neighbour)
+            std::cout << name << std::endl;
+        for(int i=0;i<middleBranchesQty;i++)
+        {
+            if(middleBranches[i]->getName()!=""&&middleBranches[i]->getName()!=neighbour)
+                std::cout << middleBranches[i]->getName() << std::endl;
+        }
+    }
+
+    void find(std::string searchName)
+    {
+        if(name==searchName)
+        {
+            this->listAllTenants(searchName);
+            return;
+        }
+
+        for(int i=0;i<middleBranchesQty;i++)
+        {
+            if(middleBranches[i]->getName()==searchName)
+            {
+                this->listAllTenants(searchName);
+                return;
+            }
+        }
     }
 };
 
@@ -46,10 +88,26 @@ private:
 public:
     tree(int treeNum)
     {
-        for(int i;i<bigBranchesQty;i++)
+        for(int i=0;i<bigBranchesQty;i++)
         {
             bigBranches.push_back(new bigBranch(i,treeNum));
         }
+    }
+
+    void find(std::string searchName)
+    {
+        for(int i=0;i<bigBranchesQty;i++)
+        {
+            bigBranches[i]->find(searchName);
+        }
+    }
+
+    ~tree()
+    {
+        for(int i=0;i<bigBranches.size();i++)
+            delete bigBranches[i];
+
+        //std::cout << "\ntree deleted\n";
     }
 };
 
@@ -65,13 +123,27 @@ public:
             trees[i]=new tree(i);
         }
     }
+
+    void find(std::string searchName)
+    {
+        for(int i=0;i<5;i++)
+            trees[i]->find(searchName);
+    }
+
+    ~forrest()
+    {
+        for(int i=0;i<5;i++)
+            delete trees[i];
+
+        //std::cout << "\nforrest deleted\n";
+    }
 };
 
 int main()
 {
     forrest elves;
 
-
+    elves.find("Someone");
 
     return 0;
 }
